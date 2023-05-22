@@ -197,7 +197,8 @@ namespace WindowsFormsApp1
             this.serial.Name = "serial";
             this.serial.Size = new System.Drawing.Size(100, 20);
             this.serial.TabIndex = 7;
-            this.serial.Text = "COM5";
+            this.serial.Text = "COM6";
+            this.serial.TextChanged += new System.EventHandler(this.serial_TextChanged);
             // 
             // Form1
             // 

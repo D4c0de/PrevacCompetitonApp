@@ -1,5 +1,6 @@
 ﻿using prevacCompetition_desktopAppWinForms;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,9 +16,11 @@ namespace WindowsFormsApp1
     public partial class Form2 : Form
     {
         private ComboBox.ObjectCollection _objects;
-        public Form2(ComboBox.ObjectCollection objects)
+        private List<Piece> _pieceList;
+        public Form2(ComboBox.ObjectCollection objects, List<Piece> pieceList)
         {
             _objects = objects;
+            _pieceList = pieceList;
             InitializeComponent();
         }
 
@@ -28,19 +31,12 @@ namespace WindowsFormsApp1
                 MessageBox.Show("Curently not avilable :( \nend last task firstly");
                 return;
             }
-            string color=this.addColor.Text; //Color
+            string color = this.addColor.Text; //Color
             if (string.IsNullOrWhiteSpace(color))
             {
                 MessageBox.Show("Please enter a valid color.");
                 return;
             }
-            int[] col = new int[color.Length];
-            for (int i = 0; i < color.Length; i++)
-            {
-                col[i] = (int)color[i];
-            }
-
-
             if (string.IsNullOrWhiteSpace(this.targetHeat.Text)) //Target temperature
             {
                 MessageBox.Show("Please enter a valid temperature.");
@@ -89,18 +85,36 @@ namespace WindowsFormsApp1
                 MessageBox.Show("Please enter a valid heat.");
                 return;
             }
-            _objects.Add(color);
 
 
-            addNewPieces(col, SpecyficHeat,mass,(int)targetTemperatureValue,size);
+            addNewPieces(color, SpecyficHeat,mass,(int)targetTemperatureValue,size);
         }
-        private void addNewPieces(int[] col,int heat,int mass,int temp,int size) {
-            connection.reg_write_first(2);
+        private void addNewPieces(string color,int heat,int mass,int temp,int size) {
+
+            int[] col = new int[color.Length];
+            for (int i = 0; i < color.Length; i++)
+            {
+                col[i] = (int)color[i];
+            }
             connection.reg_write_multiply(1, col);
             int[] temporary = new int[4] { heat, mass, temp, size };
             connection.reg_write_multiply(10, temporary);
-            MessageBox.Show("Succes");
-        
+            connection.reg_write_first(2);
+            
+            while (connection.reg_read_first() != 11)
+            {
+
+            }
+            int isSucces = connection.reg_read_single(2);
+            if (isSucces == 404)
+            {
+                MessageBox.Show("Error");
+            }
+            else
+            {
+                MessageBox.Show("Succes");
+            }
+            connection.reg_clr(0);
         }
 
         private void label2_Click(object sender, EventArgs e)

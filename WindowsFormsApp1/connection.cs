@@ -36,13 +36,14 @@ namespace prevacCompetition_desktopAppWinForms
                 }
                 modbusClient = new ModbusClient(ipAddress, tcpPort);
             }
+
             else
             {
                 if (string.IsNullOrEmpty(serial))
                 {
                     return;
                 }
-                modbusClient = new ModbusClient("serial");
+                modbusClient = new ModbusClient(serial);
             }
             modbusClient.ConnectionTimeout = 10000;
             while (!modbusClient.Available(1000))
@@ -54,6 +55,13 @@ namespace prevacCompetition_desktopAppWinForms
             isConnected = true;
 
 
+        }
+        public static async Task WaitUntilRedy()
+        {
+            while (isRunning)
+            {
+                await Task.Delay(500);
+            }
         }
         static public void set(string ip,int port)
         {
