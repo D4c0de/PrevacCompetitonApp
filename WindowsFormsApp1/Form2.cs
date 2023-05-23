@@ -89,7 +89,7 @@ namespace WindowsFormsApp1
 
             addNewPieces(color, SpecyficHeat,mass,(int)targetTemperatureValue,size);
         }
-        private void addNewPieces(string color,int heat,int mass,int temp,int size) {
+        private async void addNewPieces(string color,int heat,int mass,int temp,int size) {
 
             int[] col = new int[color.Length];
             for (int i = 0; i < color.Length; i++)
@@ -103,7 +103,7 @@ namespace WindowsFormsApp1
             
             while (connection.reg_read_first() != 11)
             {
-
+                await Task.Delay(200);
             }
             int isSucces = connection.reg_read_single(2);
             if (isSucces == 404)
@@ -112,6 +112,9 @@ namespace WindowsFormsApp1
             }
             else
             {
+                int id=connection.reg_read_single(1);
+                _pieceList.Add(new Piece(color, id));
+                _objects.Add(color);
                 MessageBox.Show("Succes");
             }
             connection.reg_clr(0);

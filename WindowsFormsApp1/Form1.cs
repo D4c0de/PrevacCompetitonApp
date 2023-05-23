@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Diagnostics.Eventing.Reader;
 
 namespace WindowsFormsApp1
 {
@@ -67,35 +68,6 @@ namespace WindowsFormsApp1
 
             connection.isRunning = false;
         }
-        private async void run_Click(object sender, EventArgs e)
-        {
-            await connection.WaitUntilRedy();
-
-            connection.isRunning = true;
-            if (!connection.isConnected)
-            {
-                MessageBox.Show("Connection not established. Please connect first.");
-                connection.isRunning = false;
-                return;
-            }
-            progressBar1.Value = 0;
-
-            int index = typeOfKronzkas.SelectedIndex;
-            int ID = Pieces[index].ID;
-            int quantity;
-
-            if (!Int32.TryParse(this.quantity.Text, out quantity))
-            {
-                MessageBox.Show("Invalid quantity. Please enter a valid number.");
-                connection.isRunning = true;
-                return;
-            }
-            int[] send = { 1, ID, quantity };
-            connection.reg_write_multiply(0, send);
-
-            await progress();
-            connection.isRunning = false;
-        }
         private void button1_Click(object sender, EventArgs e)
         {
             if (!connection.isConnected)
@@ -144,67 +116,91 @@ namespace WindowsFormsApp1
             connection.reg_clr(0);
             return;
         }
+        private async void run_Click(object sender, EventArgs e)
+        {
+            await connection.WaitUntilRedy();
+
+            connection.isRunning = true;
+            if (!connection.isConnected)
+            {
+                MessageBox.Show("Connection not established. Please connect first.");
+                connection.isRunning = false;
+                return;
+            }
+            progressBar1.Value = 0;
+
+            int index = typeOfKronzkas.SelectedIndex;
+            int ID = Pieces[index].ID;
+            int quantity;
+
+            if (!Int32.TryParse(this.quantity.Text, out quantity))
+            {
+                MessageBox.Show("Invalid quantity. Please enter a valid number.");
+                connection.isRunning = true;
+                return;
+            }
+            int[] send = { 1, ID, quantity };
+            connection.reg_write_multiply(0, send);
+
+            await progress();
+            connection.isRunning = false;
+        }
         private async Task progress()
         {
             mainLabel.Text = "Data Sent";
-            await Task.Delay(100);
-            while (connection.reg_read_first() != 11)
+            while (true)
             {
-                await Task.Delay(100);
-            }
-            mainLabel.Text = "Pieces going into Furnace";
-            await Task.Delay(100);
-            while (connection.reg_read_first() != 12)
-            {
-                await Task.Delay(100);
-            }
-            int loading = connection.reg_read_single(1);
-            if (loading == 404)
-            {
-                MessageBox.Show("Something's gone wrong");
-                progressBar1.Value = 0;
-                return;
-            }
-            mainLabel.Text = "Heating";
-            await Task.Delay(100);
-            while (loading < 98)
-            {
-                await Task.Delay(100);
-                if (progressBar1.Value != loading)
+                if (connection.reg_read_first() == 11)
                 {
-                    progressBar1.Value = loading;
+                    await Task.Delay(100);
+                    mainLabel.Text = "Pieces going into Furnace";
                 }
-                loading = connection.reg_read_single(1);
-            }
-            mainLabel.Text = "Afterburn";
-            await Task.Delay(100);
-            while (loading != 100)
-            {
+                else if (connection.reg_read_first() == 12)
+                {
+                    mainLabel.Text = "Heating";
+                    int loading = connection.reg_read_single(1);
+
+                    if (loading == 404)
+                    {
+                        MessageBox.Show("Something's gone wrong");
+                        progressBar1.Value = 0;
+                        return;
+                    }
+                    await Task.Delay(100);
+                    while (connection.reg_read_first() == 12)
+                    {
+                        await Task.Delay(100);
+                        if (progressBar1.Value != loading)
+                        {
+                            progressBar1.Value = loading;
+                        }
+                        loading = connection.reg_read_single(1);
+                        await Task.Delay(100);
+                    }
+                    mainLabel.Text = "Afterburn";
+                    await Task.Delay(100);
+                }
+                else if (connection.reg_read_first() == 14)
+                {
+                    mainLabel.Text = "Pieces going under Press";
+                    await Task.Delay(100);
+                }
+                else if (connection.reg_read_first() == 15)
+                {
+                    mainLabel.Text = "Pieces going into sorter";
+                    await Task.Delay(100);
+                }
+                else if (connection.reg_read_first() == 16)
+                {
+                    mainLabel.Text = "Oczekiwanie na kolejne zadanie";
+                    connection.reg_clr(0);
+                    progressBar1.Value = 100;
+                    MessageBox.Show("Success");
+                    await Task.Delay(100);
+                    break;
+                }
                 await Task.Delay(100);
-                loading = connection.reg_read_single(1);
             }
-            mainLabel.Text = "Pieces going under Press";
-            await Task.Delay(100);
-            while (connection.reg_read_first() != 13)
-            {
-                await Task.Delay(100);
-            }
-            mainLabel.Text = "Pieces going into furnace";
-            await Task.Delay(100);
-            while (connection.reg_read_first() != 14)
-            {
-                await Task.Delay(100);
-            }
-            mainLabel.Text = "Pieces going into sorter";
-            await Task.Delay(100);
-            while (connection.reg_read_first() != 15)
-            {
-                await Task.Delay(100);
-            }
-            mainLabel.Text = "";
-            connection.reg_clr(0);
-            progressBar1.Value = 100;
-            MessageBox.Show("Success");
             return;
         }
         private void typeOfKronzkas_SelectedIndexChanged(object sender, EventArgs e)
