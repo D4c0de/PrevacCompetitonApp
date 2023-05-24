@@ -3,20 +3,25 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
+
 namespace WindowsFormsApp1
 {
     internal static class Program
     {
+        public static string token;
         /// <summary>
-        /// Główny punkt wejścia dla aplikacji.
+        /// Główny punkt wejś0cia dla aplikacji.
         /// </summary>
         [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Auth(token));
             Application.Run(new Form1());
         }
     }

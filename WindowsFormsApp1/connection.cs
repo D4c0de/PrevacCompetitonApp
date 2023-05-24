@@ -13,48 +13,32 @@ using System.Net;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Runtime.CompilerServices;
+using WindowsFormsApp1;
+using prop;
 
 namespace prevacCompetition_desktopAppWinForms
 {
     static public class connection
     {
-        static private string ipAddress;
-        static private int tcpPort;
-        static public bool isConnected = false;
-        static private ModbusClient modbusClient;
-        static public bool isRunning = false;
-        static public string serial;
-        static public bool connectUsingTcp = false;
-        public static void Connect()
+
+        private static ModbusClient modbusClient;
+        public static bool isConnected { get; set; }
+        public static bool isRunning { get; set; }
+        public static void Connect(Connections_prop connectionsProp)
         {
 
-            if (connectUsingTcp)
+            if (!connectionsProp.preferRTU)
             {
-                if (string.IsNullOrEmpty(ipAddress) && tcpPort != 0)
-                {
-                    return;
-                }
-                modbusClient = new ModbusClient(ipAddress, tcpPort);
+                modbusClient = new ModbusClient(connectionsProp.adres, connectionsProp.port);
             }
-
             else
             {
-                if (string.IsNullOrEmpty(serial))
-                {
-                    return;
-                }
-                modbusClient = new ModbusClient(serial);
+                modbusClient = new ModbusClient(connectionsProp.adres);
             }
-            modbusClient.ConnectionTimeout = 10000;
-            while (!modbusClient.Available(1000))
-            {
-                MessageBox.Show("Connection timeout");
-                return;
-            }
+            modbusClient.ConnectionTimeout = 1000;
             modbusClient.Connect();
+            reg_read_first();
             isConnected = true;
-
-
         }
         public static async Task WaitUntilRedy()
         {
@@ -62,15 +46,6 @@ namespace prevacCompetition_desktopAppWinForms
             {
                 await Task.Delay(500);
             }
-        }
-        static public void set(string ip,int port)
-        {
-            ipAddress = ip;
-            tcpPort = port;
-        }
-        static public void set(string _serial)
-        {
-            serial = _serial;
         }
         static public void DissConnect()
         {
