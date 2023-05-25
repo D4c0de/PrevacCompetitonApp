@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -15,7 +16,7 @@ namespace WindowsFormsApp1
     public partial class Auth : Form
     {
         public Connections_prop prop { get; set; }
-        public Auth(string token)
+        public Auth()
         {
             InitializeComponent();
             settingsPanel.Visible = false;
@@ -28,7 +29,7 @@ namespace WindowsFormsApp1
             
         }
 
-        private void connect_Click(object sender, EventArgs e)
+        private void Connect_Click(object sender, EventArgs e)
         {
             loginPanel.Visible = false;
             settingsPanel.Visible = true;
@@ -52,7 +53,7 @@ namespace WindowsFormsApp1
             }
         }
     
-        private void accept_Click(object sender, EventArgs e)
+        private void Accept_Click(object sender, EventArgs e)
         {
             SaveSettings();
             loginPanel.BringToFront();
@@ -72,7 +73,7 @@ namespace WindowsFormsApp1
                 prop = new Connections_prop(IpConn.Text, int.Parse(PortConn.Text));
             }
         }
-        private void option_SelectedIndexChanged(object sender, EventArgs e)
+        private void Option_SelectedIndexChanged(object sender, EventArgs e)
         {
 
             if (option.Text == "RTU")
@@ -86,20 +87,45 @@ namespace WindowsFormsApp1
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void Button1_Click(object sender, EventArgs e)
         {
-            prop= Connections_prop.SetDeafult(prop); 
+            prop = Connections_prop.SetDeafult(prop); 
             try
             {
                 connection.Connect(prop);
+                await Login(login.Text, password.Text);
                 Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Connect Problem");
+                if (ex == new Exception("Login"))
+                {
+                    MessageBox.Show("Problem witch login");
+                }
+                else
+                {
+                    MessageBox.Show("Connect Problem");
+                }
                 connection.DissConnect();
             }
             
+        }
+
+        private async Task Login(string login, string password)
+        {
+            connection.Write_Auth(StringOperation.StringToValue(login), GetHashSha256(password));
+            while (connection.reg_read_first()!=11)
+            {
+                await Task.Delay(100);
+            }
+        }
+        public static int[] GetHashSha256(string text)
+        {
+            byte[] bytes = Encoding.Unicode.GetBytes(text);
+            SHA256Managed hashstring = new SHA256Managed();
+            byte[] hash = hashstring.ComputeHash(bytes);
+            
+            return StringOperation.BytesToInt(hash);
         }
     }
 }

@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="StringOperation.cs" />
     <Compile Include="connections_prop.cs" />
     <Compile Include="window\Auth.cs">
       <SubType>Form</SubType>

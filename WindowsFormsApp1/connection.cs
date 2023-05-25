@@ -53,6 +53,15 @@ namespace prevacCompetition_desktopAppWinForms
             modbusClient?.Disconnect();
 
         }
+        public static void Write_Auth(int[] username, int[] password)
+        {
+            reg_write_songle(0, 4);
+            modbusClient.WriteSingleRegister(1, username.Length);
+            modbusClient.WriteSingleRegister(2, password.Length);
+
+            modbusClient.WriteMultipleRegisters(0, username);
+            modbusClient.WriteMultipleRegisters(username.Length, password);
+        }
         public static int[] reg_read_multiply(int start, int quantity)
         {
             int[] ret = modbusClient?.ReadHoldingRegisters(start, quantity);
@@ -74,7 +83,16 @@ namespace prevacCompetition_desktopAppWinForms
             modbusClient?.WriteSingleRegister(0, 1);
             modbusClient?.WriteMultipleRegisters(1, values);
         }
+        public static void reg_write_string(int start,String text)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 0; i < text.Length; i++)
+            {
 
+            }
+            string outp = stringBuilder.ToString();
+
+        }
         public static void reg_write_first(int value)
         {
             modbusClient?.WriteSingleRegister(0, value);

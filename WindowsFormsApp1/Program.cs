@@ -13,6 +13,7 @@ namespace WindowsFormsApp1
     internal static class Program
     {
         public static string token;
+        public static int tier;
         /// <summary>
         /// Główny punkt wejś0cia dla aplikacji.
         /// </summary>
@@ -21,7 +22,7 @@ namespace WindowsFormsApp1
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Auth(token));
+            Application.Run(new Auth());
             Application.Run(new Form1());
         }
     }

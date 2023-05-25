@@ -59,6 +59,7 @@
             this.login.Name = "login";
             this.login.Size = new System.Drawing.Size(100, 20);
             this.login.TabIndex = 0;
+
             // 
             // password
             // 
@@ -95,7 +96,7 @@
             this.button1.TabIndex = 4;
             this.button1.Text = "Login";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
             // connect
             // 
@@ -105,7 +106,7 @@
             this.connect.TabIndex = 5;
             this.connect.Text = "Connect Options";
             this.connect.UseVisualStyleBackColor = true;
-            this.connect.Click += new System.EventHandler(this.connect_Click);
+            this.connect.Click += new System.EventHandler(this.Connect_Click);
             // 
             // settingsPanel
             // 
@@ -127,7 +128,7 @@
             this.accept.TabIndex = 6;
             this.accept.Text = "Accept ";
             this.accept.UseVisualStyleBackColor = true;
-            this.accept.Click += new System.EventHandler(this.accept_Click);
+            this.accept.Click += new System.EventHandler(this.Accept_Click);
             // 
             // option
             // 
@@ -140,7 +141,7 @@
             this.option.Size = new System.Drawing.Size(121, 21);
             this.option.TabIndex = 25;
             this.option.Text = "RTU";
-            this.option.SelectedIndexChanged += new System.EventHandler(this.option_SelectedIndexChanged);
+            this.option.SelectedIndexChanged += new System.EventHandler(this.Option_SelectedIndexChanged);
             // 
             // label3
             // 
