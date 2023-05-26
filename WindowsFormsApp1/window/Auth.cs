@@ -118,9 +118,12 @@ namespace WindowsFormsApp1
             {
                 await Task.Delay(100);
             }
+            Program.tier = connection.reg_read_single(1);
+            connection.GetToken();
         }
         public static int[] GetHashSha256(string text)
         {
+            
             byte[] bytes = Encoding.Unicode.GetBytes(text);
             SHA256Managed hashstring = new SHA256Managed();
             byte[] hash = hashstring.ComputeHash(bytes);

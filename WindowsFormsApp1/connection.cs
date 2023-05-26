@@ -53,14 +53,25 @@ namespace prevacCompetition_desktopAppWinForms
             modbusClient?.Disconnect();
 
         }
+        public static void GetToken()
+        {
+            Program.token = new UInt16[0];
+            int[] token = connection.reg_read_multiply(2, 4);
+            for (int i = 0; i < token.Length; i++)
+            {
+                ushort t = (ushort)(token[i]);
+                Program.token.Append<ushort>(t);
+            }
+        }
+
         public static void Write_Auth(int[] username, int[] password)
         {
+            
+            connection.reg_write_songle(1, username.Length);
+            connection.reg_write_songle(2, password.Length);
+            connection.reg_write_multiply(3, username);
+            connection.reg_write_multiply(username.Length+3, password);
             reg_write_songle(0, 4);
-            modbusClient.WriteSingleRegister(1, username.Length);
-            modbusClient.WriteSingleRegister(2, password.Length);
-
-            modbusClient.WriteMultipleRegisters(0, username);
-            modbusClient.WriteMultipleRegisters(username.Length, password);
         }
         public static int[] reg_read_multiply(int start, int quantity)
         {

@@ -17,12 +17,23 @@ namespace WindowsFormsApp1
         }
         public static int[] BytesToInt(byte[] value)
         {
-            int[] ret = new int[(value.Length / 2) + (value.Length % 2)];
-            for (int i = 0; i < ret.Length; i++)
+            int mod = value.Length % 2;
+            int[] ret = new int[(value.Length / 2)+(mod)];
+            if (mod==0)
             {
-                ret[i] = (int)BitConverter.ToUInt16(value, i * 2);
+                for (int i = 0; i < ret.Length; i++)
+                {
+                    ret[i] = (int)BitConverter.ToUInt16(value, i * 2);
+                }
             }
-
+            else
+            {
+                for (int i=0; i < ret.Length-1; i++)
+                {
+                    ret[i] = (int)BitConverter.ToUInt16(value, i * 2);
+                }
+                ret[ret.Length-1] = (int)value[value.Length-1];
+            }
             return ret;
         }
         public static string ValueToString(int[] value)

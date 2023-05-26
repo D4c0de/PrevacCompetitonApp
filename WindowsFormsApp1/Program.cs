@@ -12,7 +12,7 @@ namespace WindowsFormsApp1
 {
     internal static class Program
     {
-        public static string token;
+        public static UInt16[] token;
         public static int tier;
         /// <summary>
         /// Główny punkt wejś0cia dla aplikacji.
