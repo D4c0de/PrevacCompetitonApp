@@ -55,13 +55,15 @@ namespace prevacCompetition_desktopAppWinForms
         }
         public static void GetToken()
         {
-            Program.token = new UInt16[0];
-            int[] token = connection.reg_read_multiply(2, 4);
+            Program.token = new UInt16[6];
+            int[] token = connection.reg_read_multiply(2, 6);
             for (int i = 0; i < token.Length; i++)
             {
-                ushort t = (ushort)(token[i]);
-                Program.token.Append<ushort>(t);
+                Program.token[i]= (UInt16)token[i];
             }
+            reg_clr(0);
+            reg_clr(2);
+            reg_clr(3);
         }
 
         public static void Write_Auth(int[] username, int[] password)

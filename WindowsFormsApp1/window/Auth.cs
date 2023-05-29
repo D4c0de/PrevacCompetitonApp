@@ -118,6 +118,11 @@ namespace WindowsFormsApp1
             {
                 await Task.Delay(100);
             }
+            int t= connection.reg_read_single(1);
+            if (t==0)
+            {
+                throw new Exception("login");
+            }
             Program.tier = connection.reg_read_single(1);
             connection.GetToken();
         }
