@@ -89,7 +89,7 @@ namespace WindowsFormsApp1
 
         private async void Button1_Click(object sender, EventArgs e)
         {
-            prop = Connections_prop.SetDeafult(prop); 
+            prop = Connections_prop.SetDeafult(prop);
             try
             {
                 connection.Connect(prop);
@@ -98,7 +98,7 @@ namespace WindowsFormsApp1
             }
             catch (Exception ex)
             {
-                if (ex == new Exception("Login"))
+                if (ex.Message == "Login")
                 {
                     MessageBox.Show("Problem witch login");
                 }
@@ -113,6 +113,10 @@ namespace WindowsFormsApp1
 
         private async Task Login(string login, string password)
         {
+            if (login=="")
+            {
+                login = "guest";
+            }
             connection.Write_Auth(StringOperation.StringToValue(login), GetHashSha256(password));
             while (connection.reg_read_first()!=11)
             {
@@ -123,7 +127,7 @@ namespace WindowsFormsApp1
             {
                 throw new Exception("login");
             }
-            Program.tier = connection.reg_read_single(1);
+            Program.tier = t;
             connection.GetToken();
         }
         public static int[] GetHashSha256(string text)

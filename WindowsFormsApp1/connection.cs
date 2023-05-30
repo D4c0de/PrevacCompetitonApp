@@ -53,6 +53,13 @@ namespace prevacCompetition_desktopAppWinForms
             modbusClient?.Disconnect();
 
         }
+        public static void SendToken()
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                modbusClient.WriteSingleRegister(2+i, Program.token[i]);
+            }
+        }
         public static void GetToken()
         {
             Program.token = new UInt16[6];
